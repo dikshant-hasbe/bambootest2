@@ -1,0 +1,37 @@
+name: Build and Test .NET Azure Function
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1'  # Change to the .NET version you're using
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build the Azure Function
+      run: dotnet build --configuration Release
+
+    - name: Test the Azure Function
+      run: dotnet test --configuration Release --no-build
+
+    - name: Publish Azure Function artifacts
+      run: dotnet publish -c Release -o publish
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: function-artifacts
+        path: publish
